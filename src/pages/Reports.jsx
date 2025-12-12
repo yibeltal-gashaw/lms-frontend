@@ -1,14 +1,36 @@
 import { FileText, Download, Share2, Eye, Calendar, Clock } from "lucide-react";
-import { GenerateReportDialog } from "@/components/dialogs/GenerateReportDialog"
+import { GenerateReportDialog } from "@/components/dialogs/GenerateReportDialog";
+import { ReportPreviewDialog } from "@/components/dialogs/ReportPreviewDialog";
+import { ShareToTelegramDialog } from "@/components/dialogs/ShareToTelegramDialog";
+import { downloadReportAsPDF } from "@/utils/downloadReportAsPDF";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import {reports, statusStyles} from "@/data/mockdata"
+import {reports, statusStyles} from "@/data/mockdata";
+import { toast } from "sonner";
 
 export function Reports() {
   const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
+  const [isPreviewDialogOpen, setIsPreviewDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState(null);
+
+  const handlePreview = (report) => {
+    setSelectedReport(report);
+    setIsPreviewDialogOpen(true);
+  };
+
+  const handleDownload = (report) => {
+    downloadReportAsPDF(report);
+    toast.success(`Downloading ${report.title}`);
+  };
+
+  const handleShare = (report) => {
+    setSelectedReport(report);
+    setIsShareDialogOpen(true);
+  };
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Page Header */}
@@ -86,13 +108,13 @@ export function Reports() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" onClick={() => handlePreview(report)}>
                   <Eye className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" onClick={() => handleDownload(report)}>
                   <Download className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" onClick={() => handleShare(report)}>
                   <Share2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -100,9 +122,21 @@ export function Reports() {
           </Card>
         ))}
       </div>
+
+      {/* Dialogs */}
       <GenerateReportDialog
         open={isGenerateDialogOpen}
         onOpenChange={setIsGenerateDialogOpen}
+      />
+      <ReportPreviewDialog
+        open={isPreviewDialogOpen}
+        onOpenChange={setIsPreviewDialogOpen}
+        report={selectedReport}
+      />
+      <ShareToTelegramDialog
+        open={isShareDialogOpen}
+        onOpenChange={setIsShareDialogOpen}
+        report={selectedReport}
       />
     </div>
   );

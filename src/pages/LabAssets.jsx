@@ -35,22 +35,76 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
+import { useAuth } from "@/contexts/AuthContext";
 import {assets, statusStyles} from "@/data/mockdata"
+
+// Map labs to departments
+const labToDepartmentMap = {
+  "Chemistry Lab A": "Chemistry",
+  "Chemistry Lab B": "Chemistry",
+  "Biology Lab A": "Biology",
+  "Biology Lab B": "Biology",
+  "Physics Lab": "Physics",
+  "Computer Lab": "Computer Science",
+  "Genetics Lab": "Genetics",
+};
+
+// Map department codes to department names
+const departmentCodeMap = {
+  swe: "Computer Science",
+  chemistry: "Chemistry",
+  biology: "Biology",
+  physics: "Physics",
+  genetics: "Genetics",
+};
+
+// Helper function to get department from lab name
+const getDepartmentFromLab = (labName) => {
+  return labToDepartmentMap[labName] || null;
+};
+
+// Helper function to normalize department name
+const normalizeDepartment = (dept) => {
+  if (!dept) return null;
+  // Check if it's a code (like "swe")
+  if (departmentCodeMap[dept.toLowerCase()]) {
+    return departmentCodeMap[dept.toLowerCase()];
+  }
+  // Return as is if it's already a full name
+  return dept;
+};
 
 export function LabAssets() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
   const { hasPermission } = useRoleAccess();
+  const { user } = useAuth();
+  // Get user's department
+  const userDepartment = normalizeDepartment(user?.department);
 
+  // Filter assets by department and other criteria
   const filteredAssets = assets.filter((asset) => {
+    // Filter by department if user has a department
+    if (userDepartment) {
+      const assetDepartment = getDepartmentFromLab(asset.lab);
+      if (assetDepartment !== userDepartment) {
+        return false;
+      }
+    }
+    // If user has no department (e.g., admin), show all assets
+
+    // Filter by search query
     const matchesSearch =
       asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       asset.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       asset.lab.toLowerCase().includes(searchQuery.toLowerCase()) ||
       asset.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Filter by status
     const matchesStatus =
       statusFilter === "all" || asset.status === statusFilter;
+    
     return matchesSearch && matchesStatus;
   });
 

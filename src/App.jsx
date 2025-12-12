@@ -1,36 +1,79 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "sonner";
+import { DashboardHome } from "@/pages/DashBoardHome";
+import { ServiceRequests } from "@/pages/ServiceRequests";
+import { Reports } from "@/pages/Reports";
+import { Schedule } from "@/pages/Schedule";
+import { LabAssets } from "@/pages/LabAssets";
+import { Analytics } from "@/pages/Analytics";
+import NotFound from "@/pages/NotFound";
+import { Users } from "@/pages/Users";
+import { Login } from "@/pages/Login";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import Settings from "@/pages/Settings";
+import { Approvals } from "@/pages/Approval";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <h2 className='text-sm text-gray-400'>Tailwind CSS is working!</h2>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Toaster />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        {/* Protected Route wrapper */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/" element={<DashboardHome />} />
+          <Route path="assets" element={<LabAssets />} />
+          <Route path="services" element={<ServiceRequests />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="schedule" element={<Schedule />} />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  "admin",
+                  "department_head",
+                  "technical_assistant",
+                ]}
+              >
+                <Analytics />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/approvals"
+            element={
+              <ProtectedRoute
+                allowedRoles={["department_head", "college_dean"]}
+              >
+                <Approvals />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="users"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <Users />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="settings" element={<Settings />} />
+        </Route>
+        {/* Forbidden */}
+        <Route path="/403" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

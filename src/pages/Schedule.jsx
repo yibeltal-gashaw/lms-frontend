@@ -1,4 +1,4 @@
-import { Calendar, ChevronLeft, ChevronRight, Clock, Filter, Plus, Users } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Clock, Plus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,13 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMemo, useState } from "react";
 import { AddCourseDialog } from "@/components/dialogs/AddCourseDialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -30,20 +23,11 @@ import {
   filterScheduleByDepartment,
 } from "@/utils/scheduleGenerator";
 
-const departments = [
-  { value: "all", label: "All Departments" },
-  { value: "Chemistry", label: "Chemistry" },
-  { value: "Biology", label: "Biology" },
-  { value: "Physics", label: "Physics" },
-  { value: "Computer Science", label: "Computer Science" },
-  { value: "Genetics", label: "Genetics" },
-];
-
 const departmentColors = {
   Chemistry: "bg-primary text-primary-foreground",
-  Biology: "bg-success text-white",
+  "Computer Science": "bg-success text-white",
   Physics: "bg-accent text-accent-foreground",
-  "Computer Science": "bg-chart-5 text-white",
+  biology: "bg-chart-5 text-white",
   Genetics: "bg-chart-4 text-white",
 };
 
@@ -55,20 +39,41 @@ const initialCourses = [
   { id: "4", courseCode: "BIO 301", courseName: "Genetics", labName: "Genetics Lab", creditHours: 3, labHoursPerWeek: 2, studentCount: 20, instructor: "Dr. Williams", department: "Genetics" },
   { id: "5", courseCode: "CS 201", courseName: "Data Structures Lab", labName: "Computer Lab", creditHours: 3, labHoursPerWeek: 2, studentCount: 35, instructor: "Prof. Wilson", department: "Computer Science" },
   { id: "6", courseCode: "CHEM 201", courseName: "Organic Chemistry", labName: "Chemistry Lab B", creditHours: 4, labHoursPerWeek: 3, studentCount: 22, instructor: "Dr. Davis", department: "Chemistry" },
+  { id: "7", courseCode: "CS 101", courseName: "Introduction to Programming Lab", labName: "Computer Lab", creditHours: 3, labHoursPerWeek: 2, studentCount: 40, instructor: "Prof. Anderson", department: "Computer Science" },
+  { id: "8", courseCode: "CS 202", courseName: "Algorithms and Data Structures Lab", labName: "Computer Lab", creditHours: 4, labHoursPerWeek: 3, studentCount: 32, instructor: "Dr. Martinez", department: "Computer Science" },
+  { id: "9", courseCode: "CS 301", courseName: "Database Systems Lab", labName: "Computer Lab", creditHours: 3, labHoursPerWeek: 2, studentCount: 28, instructor: "Prof. Thompson", department: "Computer Science" },
+  { id: "10", courseCode: "CS 302", courseName: "Web Development Lab", labName: "Computer Lab", creditHours: 3, labHoursPerWeek: 2, studentCount: 30, instructor: "Dr. Lee", department: "Computer Science" },
+  { id: "11", courseCode: "CS 401", courseName: "Software Engineering Lab", labName: "Computer Lab", creditHours: 4, labHoursPerWeek: 3, studentCount: 25, instructor: "Prof. Garcia", department: "Computer Science" },
 ];
+
+// Map department codes to readable names
+const departmentCodeMap = {
+  swe: "Computer Science",
+  chemistry: "Chemistry",
+  biology: "Biology",
+  physics: "Physics",
+  genetics: "Genetics",
+};
+
+const normalizeDepartment = (dept) => {
+  if (!dept) return null;
+  const lower = dept.toLowerCase();
+  if (departmentCodeMap[lower]) return departmentCodeMap[lower];
+  return dept;
+};
 
 export function Schedule() {
   const { user } = useAuth();
   const { hasPermission, role } = useRoleAccess();
   
   const [courses, setCourses] = useState(initialCourses);
-  const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [weekOffset, setWeekOffset] = useState(0);
   const [isAddCourseOpen, setIsAddCourseOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("schedule");
 
   const canManageCourses = role === "admin" || role === "department_head";
-  const userDepartment = user?.department || "Chemistry";
+  const userDepartment = normalizeDepartment(user?.department);
+  const selectedDepartment = userDepartment || "__none__";
 
   // Generate schedule from courses
   const fullSchedule = useMemo(() => {
@@ -83,9 +88,9 @@ export function Schedule() {
 
   // Stats
   const stats = useMemo(() => {
-    const filtered = selectedDepartment === "all" 
-      ? courses 
-      : courses.filter(c => c.department === selectedDepartment);
+    const filtered = selectedDepartment === "all"
+      ? courses
+      : courses.filter((c) => c.department === selectedDepartment);
     
     return {
       totalCourses: filtered.length,
@@ -149,7 +154,11 @@ export function Schedule() {
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalCourses}</div>
             <p className="text-xs text-muted-foreground">
-              {selectedDepartment === "all" ? "Across all departments" : `In ${selectedDepartment}`}
+              {selectedDepartment === "all"
+                ? "Across all departments"
+                : selectedDepartment === "__none__"
+                  ? "No department assigned"
+                  : `In ${selectedDepartment}`}
             </p>
           </CardContent>
         </Card>
@@ -183,21 +192,9 @@ export function Schedule() {
             <TabsTrigger value="courses">Course List</TabsTrigger>
           </TabsList>
 
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-muted-foreground" />
-            <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select department" />
-              </SelectTrigger>
-              <SelectContent>
-                {departments.map((dept) => (
-                  <SelectItem key={dept.value} value={dept.value}>
-                    {dept.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <Badge variant="outline" className="justify-center">
+            Department: {selectedDepartment === "__none__" ? "Not assigned" : selectedDepartment}
+          </Badge>
         </div>
 
         {/* Weekly Schedule View */}

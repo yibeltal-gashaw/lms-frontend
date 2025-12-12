@@ -475,11 +475,11 @@ export const scheduleData = [
 export const labColors = {
   "Chemistry Lab A": "bg-primary/10 border-l-primary",
   "Chemistry Lab B": "bg-primary/20 border-l-primary",
-  "Biology Lab A": "bg-success/10 border-l-success",
+  "Computer Lab": "bg-success/10 border-l-success",
   "Biology Lab B": "bg-success/20 border-l-success",
   "Physics Lab": "bg-accent/10 border-l-accent",
   "Genetics Lab": "bg-chart-4/10 border-l-chart-4",
-  "Computer Lab": "bg-chart-5/10 border-l-chart-5",
+  "Biology Lab A": "bg-chart-5/10 border-l-chart-5",
 };
 
 // service request mock data

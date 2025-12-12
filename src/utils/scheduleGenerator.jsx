@@ -1,54 +1,96 @@
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 const DAYS_FULL = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+// Time slots matching sample schedule pattern (afternoon/evening times)
 const TIME_SLOTS = [
-  "08:00",
-  "09:00",
-  "10:00",
-  "11:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
+  "14:30",  // 2:30 PM
+  "16:30",  // 4:30 PM
+  "17:30",  // 5:30 PM
+  "19:30",  // 7:30 PM
+  "21:30",  // 9:30 PM
+  "22:30",  // 10:30 PM
 ];
-
-function getSlotKey(day, time, lab) {
-  return `${day}-${time}-${lab}`;
-}
 
 function addHours(time, hours) {
   const [h, m] = time.split(":").map(Number);
-  const newHour = h + hours;
-  return `${String(newHour).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  const totalMinutes = h * 60 + m + hours * 60;
+  const newHour = Math.floor(totalMinutes / 60);
+  const newMinute = totalMinutes % 60;
+  return `${String(newHour).padStart(2, "0")}:${String(newMinute).padStart(2, "0")}`;
+}
+
+function timeToMinutes(time) {
+  const [h, m] = time.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function minutesToTime(minutes) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
 function isSlotAvailable(occupied, day, time, lab, duration) {
-  const timeIndex = TIME_SLOTS.indexOf(time);
-  if (timeIndex === -1) return false;
+  // Check if the starting time is in our available time slots
+  if (!TIME_SLOTS.includes(time)) return false;
 
-  // Check if we have enough consecutive slots
-  for (let i = 0; i < duration; i++) {
-    const checkTimeIndex = timeIndex + i;
-    if (checkTimeIndex >= TIME_SLOTS.length) return false;
-
-    const checkTime = TIME_SLOTS[checkTimeIndex];
-    const key = getSlotKey(day, checkTime, lab);
-    if (occupied[key]) return false;
+  const startMinutes = timeToMinutes(time);
+  const endMinutes = startMinutes + duration * 60;
+  
+  // Get occupied ranges for this day and lab
+  const key = `${day}-${lab}`;
+  const occupiedRanges = occupied[key] || [];
+  
+  // Check if our time range overlaps with any existing range
+  for (const range of occupiedRanges) {
+    // Check for overlap: our start is before their end AND our end is after their start
+    if (startMinutes < range.end && endMinutes > range.start) {
+      return false;
+    }
   }
 
   return true;
 }
 
 function markSlotsOccupied(occupied, day, time, lab, duration) {
-  const timeIndex = TIME_SLOTS.indexOf(time);
-  for (let i = 0; i < duration; i++) {
-    const checkTime = TIME_SLOTS[timeIndex + i];
-    const key = getSlotKey(day, checkTime, lab);
-    occupied[key] = true;
+  const startMinutes = timeToMinutes(time);
+  const endMinutes = startMinutes + duration * 60;
+  
+  const key = `${day}-${lab}`;
+  if (!occupied[key]) {
+    occupied[key] = [];
   }
+  
+  // Add this time range to occupied ranges
+  occupied[key].push({ start: startMinutes, end: endMinutes });
 }
 
 function getDayIndex(dayFull) {
   return DAYS_FULL.indexOf(dayFull);
+}
+
+function getDayLoad(schedule, dayIndex) {
+  return schedule[dayIndex].slots.reduce((sum, slot) => {
+    // Calculate duration in hours from time strings (handles minutes)
+    const [startH, startM] = slot.time.split(":").map(Number);
+    const [endH, endM] = slot.endTime.split(":").map(Number);
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+    const durationHours = (endMinutes - startMinutes) / 60;
+    return sum + durationHours;
+  }, 0);
+}
+
+function getDaysByLoad(schedule) {
+  // Prioritize deterministically: fewer courses, then total hours, then day index
+  const dayIndexes = [0, 1, 2, 3, 4];
+  return dayIndexes.sort((a, b) => {
+    const aCourses = schedule[a].slots.length;
+    const bCourses = schedule[b].slots.length;
+    if (aCourses !== bCourses) return aCourses - bCourses;
+    const loadDiff = getDayLoad(schedule, a) - getDayLoad(schedule, b);
+    if (loadDiff !== 0) return loadDiff;
+    return a - b;
+  });
 }
 
 export function generateSchedule(courses, weekStartDate) {
@@ -60,13 +102,15 @@ export function generateSchedule(courses, weekStartDate) {
     slots: [],
   }));
 
-  // Sort courses: prioritized ones first (those with preferences), then by lab hours
+  // Sort courses: prioritized ones first (those with preferences), then by lab hours, then by course code for stability
   const sortedCourses = [...courses].sort((a, b) => {
     const aHasPreference = a.preferredDay || a.preferredTime ? 1 : 0;
     const bHasPreference = b.preferredDay || b.preferredTime ? 1 : 0;
     if (bHasPreference !== aHasPreference)
       return bHasPreference - aHasPreference;
-    return b.labHoursPerWeek - a.labHoursPerWeek;
+    const labDiff = b.labHoursPerWeek - a.labHoursPerWeek;
+    if (labDiff !== 0) return labDiff;
+    return a.courseCode.localeCompare(b.courseCode);
   });
 
   for (const course of sortedCourses) {
@@ -107,10 +151,15 @@ export function generateSchedule(courses, weekStartDate) {
       }
     }
 
-    // Try preferred day with any time
+    // Try preferred day with any time (try less loaded days after the preferred one)
     if (!scheduled && course.preferredDay) {
-      const dayIndex = getDayIndex(course.preferredDay);
-      if (dayIndex !== -1) {
+      const preferredIndex = getDayIndex(course.preferredDay);
+      const loadOrderedDays = getDaysByLoad(schedule);
+      const candidateDayIndexes = preferredIndex === -1
+        ? loadOrderedDays
+        : [preferredIndex, ...loadOrderedDays.filter((d) => d !== preferredIndex)];
+
+      for (const dayIndex of candidateDayIndexes) {
         for (const time of TIME_SLOTS) {
           if (
             isSlotAvailable(
@@ -142,12 +191,13 @@ export function generateSchedule(courses, weekStartDate) {
             break;
           }
         }
+        if (scheduled) break;
       }
     }
 
-    // Try preferred time on any day
+    // Try preferred time on any day (choose least-loaded days first)
     if (!scheduled && course.preferredTime) {
-      for (let dayIndex = 0; dayIndex < DAYS.length; dayIndex++) {
+      for (const dayIndex of getDaysByLoad(schedule)) {
         if (
           isSlotAvailable(
             occupied,
@@ -180,9 +230,9 @@ export function generateSchedule(courses, weekStartDate) {
       }
     }
 
-    // Find any available slot
+    // Find any available slot (least-loaded days first, randomize times)
     if (!scheduled) {
-      outer: for (let dayIndex = 0; dayIndex < DAYS.length; dayIndex++) {
+      outer: for (const dayIndex of getDaysByLoad(schedule)) {
         for (const time of TIME_SLOTS) {
           if (
             isSlotAvailable(

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, SquareCheck } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +39,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const reportSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(100),
@@ -69,9 +70,40 @@ const allLabs = [
   "Computer Lab",
 ];
 
+const labToDepartmentMap = {
+  "Biology Lab A": "Biology",
+  "Biology Lab B": "Biology",
+  "Chemistry Lab A": "Chemistry",
+  "Chemistry Lab B": "Chemistry",
+  "Physics Lab": "Physics",
+  "Genetics Lab": "Genetics",
+  "Computer Lab": "Computer Science",
+};
+
+const departmentCodeMap = {
+  swe: "Computer Science",
+  chemistry: "Chemistry",
+  biology: "Biology",
+  physics: "Physics",
+  genetics: "Genetics",
+};
+
+const normalizeDepartment = (dept) => {
+  if (!dept) return null;
+  const lower = dept.toLowerCase();
+  if (departmentCodeMap[lower]) return departmentCodeMap[lower];
+  return dept;
+};
 
 export function GenerateReportDialog({ open, onOpenChange }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
+  const userDepartment = normalizeDepartment(user?.department);
+
+  const isLabAllowed = (lab) => {
+    if (!userDepartment) return true;
+    return labToDepartmentMap[lab] === userDepartment;
+  };
 
   const form = useForm({
     resolver: zodResolver(reportSchema),
@@ -87,6 +119,7 @@ export function GenerateReportDialog({ open, onOpenChange }) {
   const selectedLabs = form.watch("labs");
 
   const toggleLab = (lab) => {
+    if (!isLabAllowed(lab)) return;
     const current = form.getValues("labs");
     if (current.includes(lab)) {
       form.setValue("labs", current.filter((l) => l !== lab));
@@ -96,7 +129,8 @@ export function GenerateReportDialog({ open, onOpenChange }) {
   };
 
   const selectAllLabs = () => {
-    form.setValue("labs", allLabs);
+    const allowedLabs = allLabs.filter(isLabAllowed);
+    form.setValue("labs", allowedLabs);
   };
 
   const onSubmit = async (data) => {
@@ -255,21 +289,34 @@ export function GenerateReportDialog({ open, onOpenChange }) {
                     </Button>
                   </div>
                   <div className="grid grid-cols-2 gap-2 rounded-lg border border-border p-3">
-                    {allLabs.map((lab) => (
-                      <div key={lab} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={lab}
-                          checked={selectedLabs.includes(lab)}
-                          onCheckedChange={() => toggleLab(lab)}
-                        />
-                        <label
-                          htmlFor={lab}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {lab}
-                        </label>
-                      </div>
-                    ))}
+                    {allLabs.map((lab) => {
+                      const isAllowed = isLabAllowed(lab);
+                      const isChecked = selectedLabs.includes(lab);
+                      return (
+                        <div key={lab} className="flex items-center space-x-2">
+                          {isAllowed ? (
+                            <Checkbox
+                              id={lab}
+                              checked={isChecked}
+                              onCheckedChange={() => toggleLab(lab)}
+                            />
+                          ) : (
+                            <div className="flex h-4 w-4 items-center justify-center">
+                              <SquareCheck className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                          )}
+                          <label
+                            htmlFor={lab}
+                            className={cn(
+                              "text-sm font-medium leading-none",
+                              !isAllowed && "cursor-not-allowed opacity-70 text-muted-foreground"
+                            )}
+                          >
+                            {lab}
+                          </label>
+                        </div>
+                      );
+                    })}
                   </div>
                   <FormMessage />
                 </FormItem>

@@ -19,28 +19,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { CheckCircle, UserPlus } from "lucide-react";
-
-
-const roles = [
-  { value: "technical-assistant", label: "Technical Assistant" },
-  { value: "department-head", label: "Department Head" },
-  { value: "college", label: "College" },
-  { value: "lab-coordinator", label: "Lab Coordinator" },
-  { value: "general-service", label: "General Service" },
-  { value: "ict-directorate", label: "ICT Directorate" },
-];
-
-const departments = [
-  { value: "software-engineering", label: "Software Engineering" },
-  { value: "computer-science", label: "Computer Science" },
-  { value: "information-technology", label: "Information Technology" },
-  { value: "agriculture", label: "Agriculture" },
-  { value: "biology", label: "Biology" },
-  { value: "chemistry", label: "Chemistry" },
-  { value: "physics", label: "Physics" },
-  { value: "geology", label: "Geology" },
-  { value: "all", label: "All Departments" },
-];
+import { roles, departments } from "@/data/mockdata";
 
 export function CreateUserDialog({ open, onOpenChange }) {
   const [isLoading, setIsLoading] = useState(false);

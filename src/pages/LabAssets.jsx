@@ -37,41 +37,12 @@ import { cn } from "@/lib/utils";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
 import { useAuth } from "@/contexts/AuthContext";
 import {assets, statusStyles} from "@/data/mockdata"
-
-// Map labs to departments
-const labToDepartmentMap = {
-  "Chemistry Lab A": "Chemistry",
-  "Chemistry Lab B": "Chemistry",
-  "Biology Lab A": "Biology",
-  "Biology Lab B": "Biology",
-  "Physics Lab": "Physics",
-  "Computer Lab": "Computer Science",
-  "Genetics Lab": "Genetics",
-};
-
-// Map department codes to department names
-const departmentCodeMap = {
-  swe: "Computer Science",
-  chemistry: "Chemistry",
-  biology: "Biology",
-  physics: "Physics",
-  genetics: "Genetics",
-};
+import { labToDepartmentMap } from "@/data/mockdata";
+import { normalizeDepartment } from "@/lib/utils";
 
 // Helper function to get department from lab name
 const getDepartmentFromLab = (labName) => {
   return labToDepartmentMap[labName] || null;
-};
-
-// Helper function to normalize department name
-const normalizeDepartment = (dept) => {
-  if (!dept) return null;
-  // Check if it's a code (like "swe")
-  if (departmentCodeMap[dept.toLowerCase()]) {
-    return departmentCodeMap[dept.toLowerCase()];
-  }
-  // Return as is if it's already a full name
-  return dept;
 };
 
 export function LabAssets() {

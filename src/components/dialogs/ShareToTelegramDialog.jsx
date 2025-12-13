@@ -19,6 +19,7 @@ export function ShareToTelegramDialog({
   open,
   onOpenChange,
   report,
+  onShare,
 }) {
   const [chatId, setChatId] = useState("");
   const [customMessage, setCustomMessage] = useState("");
@@ -47,6 +48,11 @@ export function ShareToTelegramDialog({
       window.open(telegramUrl, "_blank", "noopener,noreferrer");
 
       toast.success("Select a chat to share the report");
+      
+      // Call onShare callback if provided
+      if (onShare) {
+        onShare(report, { chatId, customMessage });
+      }
 
       onOpenChange(false);
       setChatId("");
@@ -67,6 +73,11 @@ export function ShareToTelegramDialog({
     window.open(telegramUrl, "_blank", "noopener,noreferrer");
     
     toast.success("Select a chat to share the report");
+    
+    // Call onShare callback if provided
+    if (onShare) {
+      onShare(report, { chatId, customMessage });
+    }
     
     onOpenChange(false);
   };

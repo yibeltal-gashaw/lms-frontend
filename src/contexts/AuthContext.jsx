@@ -1,71 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import {mockLabActorData} from "@/data/mockdata";
 
 const AuthContext = createContext();
 
-const mockUsers = {
-  "admin@lab.com": {
-    password: "admin123",
-    user: {
-      id: "1",
-      email: "admin@lab.com",
-      firstName: "Estifanos",
-      lastName: "Gashaw",
-      role: "admin",
-    },
-  },
-  "head@lab.com": {
-    password: "head123",
-    user: {
-      id: "2",
-      email: "head@lab.com",
-      firstName: "Demeke",
-      lastName: "Mola",
-      role: "department_head",
-      department: "swe",
-    },
-  },
-  "tech@lab.com": {
-    password: "tech123",
-    user: {
-      id: "3",
-      email: "tech@lab.com",
-      firstName: "Abera",
-      lastName: "Feqadu",
-      role: "technical_assistant",
-    },
-  },
-  "gens@lab.com": {
-    password: "gens123",
-    user: {
-      id: "4",
-      email: "gens@lab.com",
-      firstName: "Belete",
-      lastName: "Sewunet",
-      role: "general_service",
-    },
-  },
-  "ict@lab.com": {
-    password: "ict123",
-    user: {
-      id: "5",
-      email: "ict@lab.com",
-      firstName: "Abrham",
-      lastName: "Mezgebu",
-      role: "ict_director",
-    },
-  },
-  "clg@lab.com": {
-    password: "clg123",
-    user: {
-      id: "5",
-      email: "clg@lab.com",
-      firstName: "Melese",
-      lastName: "Alemante",
-      role: "college_dean",
-      college:"CCI"
-    },
-  },
-};
+
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -88,7 +26,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     // Example: const response = await fetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
 
-    const mockUser = mockUsers[email.toLowerCase()];
+    const mockUser = mockLabActorData[email.toLowerCase()];
 
     if (!mockUser) {
       return { success: false, error: "User not found" };

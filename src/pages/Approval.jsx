@@ -23,8 +23,12 @@ import { AssetApprovalDialog } from "@/components/dialogs/AssetApprovalDialog";
 import { ReportReviewDialog } from "@/components/dialogs/ReportReviewDialog";
 import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
-import {priorityStyles, assetRequests, reportReviews, statusStyles} from "@/data/mockdata"
-
+import {
+  priorityStyles,
+  assetRequests,
+  reportReviews,
+  statusStyles,
+} from "@/data/mockdata";
 
 export function Approvals() {
   const [selectedAsset, setSelectedAsset] = useState(null);
@@ -35,7 +39,7 @@ export function Approvals() {
 
   const pendingAssets = assets.filter((a) => a.status === "pending");
   const pendingReports = reports.filter((r) => r.status === "pending");
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const handleAssetApproval = (id, approved, comments) => {
     setAssets((prev) =>
@@ -47,8 +51,12 @@ export function Approvals() {
     );
     setSelectedAsset(null);
     approved
-      ? toast.success(`Request ${id} has been approved.`)
-      : toast.error(`Request ${id} has been rejected.`);
+      ? toast.success("Request approved", {
+          description: `Request ${id} has been approved.`,
+        })
+      : toast.error("Request rejected", {
+          description: `Request ${id} has been rejected.`,
+        });
   };
 
   const handleReportReview = (id, approved, comments) => {

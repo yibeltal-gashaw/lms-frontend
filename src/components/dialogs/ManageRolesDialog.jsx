@@ -13,55 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Shield, Info } from "lucide-react";
-
-
-const allRoles = [
-  {
-    id: "technical-assistant",
-    label: "Technical Assistant",
-    description: "Register assets, request maintenance, generate reports",
-  },
-  {
-    id: "department-head",
-    label: "Department Head",
-    description: "Approve acquisitions, manage schedules, view department assets",
-  },
-  {
-    id: "college",
-    label: "College",
-    description: "Approve department requests, request reports, share to coordinator",
-  },
-  {
-    id: "lab-coordinator",
-    label: "Lab Coordinator",
-    description: "View all analytics, generate aggregate reports",
-  },
-  {
-    id: "general-service",
-    label: "General Service",
-    description: "Handle cleaning, electric, water, furniture services",
-  },
-  {
-    id: "ict-directorate",
-    label: "ICT Directorate",
-    description: "Handle network and computer maintenance services",
-  },
-  {
-    id: "system-admin",
-    label: "System Admin",
-    description: "Full system access, user management, privilege control",
-  },
-];
-
-const roleToId = {
-  "Technical Assistant": "technical-assistant",
-  "Department Head": "department-head",
-  "College": "college",
-  "Lab Coordinator": "lab-coordinator",
-  "General Service": "general-service",
-  "ICT Directorate": "ict-directorate",
-  "System Admin": "system-admin",
-};
+import { allRoles, roleToId } from "@/data/mockdata";
 
 export function ManageRolesDialog({ open, onOpenChange, user }) {
   const [isLoading, setIsLoading] = useState(false);

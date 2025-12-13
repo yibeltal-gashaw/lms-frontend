@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { serviceTypes } from "@/data/mockdata";
 
 const serviceRequestSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(100),
@@ -40,13 +41,7 @@ const serviceRequestSchema = z.object({
 });
 
 
-const serviceTypes = [
-  { value: "Cleaning", label: "Cleaning Service", department: "General Service" },
-  { value: "Electrical", label: "Electrical Installation/Maintenance", department: "General Service" },
-  { value: "Water", label: "Water Maintenance", department: "General Service" },
-  { value: "Furniture", label: "Furniture Installation/Maintenance", department: "General Service" },
-  { value: "ICT", label: "Network/Computer Maintenance", department: "ICT Directorate" },
-];
+
 
 const labs = [
   "Biology Lab A",

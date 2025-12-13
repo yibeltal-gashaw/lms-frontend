@@ -13,13 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, MessageSquare, FileText, Calendar, User, Building, Download, Eye } from "lucide-react";
-
-
-const statusStyles = {
-  pending: "bg-amber-500/10 text-amber-600",
-  approved: "bg-emerald-500/10 text-emerald-600",
-  revision_requested: "bg-blue-500/10 text-blue-600",
-};
+import { statusStyles } from "@/data/mockdata";
 
 export function ReportReviewDialog({
   open,

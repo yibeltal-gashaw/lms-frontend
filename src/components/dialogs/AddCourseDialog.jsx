@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { allLabs, days, times } from "@/data/mockdata";
 
 const courseSchema = z.object({
   courseName: z.string().min(2, "Course name is required").max(100),
@@ -51,27 +52,6 @@ const courseSchema = z.object({
   preferredTime: z.string().optional(),
 });
 
-const labs = [
-  "Chemistry Lab A",
-  "Chemistry Lab B",
-  "Biology Lab A",
-  "Biology Lab B",
-  "Physics Lab",
-  "Genetics Lab",
-  "Computer Lab",
-];
-
-const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const times = [
-  "08:00",
-  "09:00",
-  "10:00",
-  "11:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-];
 
 export function AddCourseDialog({
   open,
@@ -105,11 +85,15 @@ export function AddCourseDialog({
         id: crypto.randomUUID(),
       };
       onCourseAdded(newCourse);
-      toast.success(`${data.courseName} has been added to the schedule.`);
+      toast.success("Course Registered Successfully",{
+        description:`${data.courseName} has been added to the schedule.`
+      });
       form.reset();
       onOpenChange(false);
     } catch (error) {
-      toast.error("Failed to add course. Please try again.");
+      toast.error("Course Registered Failed",{
+        description:"Failed to add course. Please try again."
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -173,7 +157,7 @@ export function AddCourseDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {labs.map((lab) => (
+                      {allLabs.map((lab) => (
                         <SelectItem key={lab} value={lab}>
                           {lab}
                         </SelectItem>

@@ -1,10 +1,70 @@
-import {
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  XCircle,
-} from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, XCircle } from "lucide-react";
 
+export const mockLabActorData = {
+  "admin@lab.com": {
+    password: "admin123",
+    user: {
+      id: "1",
+      email: "admin@lab.com",
+      firstName: "Estifanos",
+      lastName: "Gashaw",
+      role: "admin",
+    },
+  },
+  "head@lab.com": {
+    password: "head123",
+    user: {
+      id: "2",
+      email: "head@lab.com",
+      firstName: "Demeke",
+      lastName: "Mola",
+      role: "department_head",
+      department: "swe",
+    },
+  },
+  "tech@lab.com": {
+    password: "tech123",
+    user: {
+      id: "3",
+      email: "tech@lab.com",
+      firstName: "Abera",
+      lastName: "Feqadu",
+      role: "technical_assistant",
+      department: "swe",
+    },
+  },
+  "gens@lab.com": {
+    password: "gens123",
+    user: {
+      id: "4",
+      email: "gens@lab.com",
+      firstName: "Belete",
+      lastName: "Sewunet",
+      role: "general_service",
+    },
+  },
+  "ict@lab.com": {
+    password: "ict123",
+    user: {
+      id: "5",
+      email: "ict@lab.com",
+      firstName: "Abrham",
+      lastName: "Mezgebu",
+      role: "ict_director",
+    },
+  },
+  "clg@lab.com": {
+    password: "clg123",
+    user: {
+      id: "5",
+      email: "clg@lab.com",
+      firstName: "Melese",
+      lastName: "Alemante",
+      role: "college_dean",
+      college: "CCI",
+    },
+  },
+};
 // Approval mock data
 export const assetRequests = [
   {
@@ -106,6 +166,7 @@ export const reportReviews = [
     status: "pending",
   },
 ];
+
 
 // User data
 export const mockUsers = [
@@ -292,7 +353,7 @@ export const assets = [
   },
 ];
 
-// common style
+// common mock data and style
 export const statusStyles = {
   Active: "bg-success/10 text-success border-success/20",
   "Under Maintenance": "bg-warning/10 text-warning border-warning/20",
@@ -315,13 +376,22 @@ export const priorityStyles = {
   High: "bg-destructive/10 text-destructive border-destructive/20",
   Medium: "bg-warning/10 text-warning border-warning/20",
   Low: "bg-muted text-muted-foreground border-muted-foreground/20",
-  
+
   // approval
   low: "bg-muted text-muted-foreground",
   medium: "bg-blue-500/10 text-blue-600",
   high: "bg-amber-500/10 text-amber-600",
-  critical: "bg-destructive/10 text-destructive"
+  critical: "bg-destructive/10 text-destructive",
 };
+
+export const roles = [
+  { value: "technical-assistant", label: "Technical Assistant" },
+  { value: "department-head", label: "Department Head" },
+  { value: "college", label: "College" },
+  { value: "lab-coordinator", label: "Lab Coordinator" },
+  { value: "general-service", label: "General Service" },
+  { value: "ict-directorate", label: "ICT Directorate" },
+];
 // report mock data
 export const reports = [
   {
@@ -369,6 +439,117 @@ export const reports = [
     createdDate: "2024-12-05",
     dueDate: "2024-12-20",
   },
+];
+
+export const departments = [
+  { value: "software-engineering", label: "Software Engineering" },
+  { value: "computer-science", label: "Computer Science" },
+  { value: "information-technology", label: "Information Technology" },
+  { value: "agriculture", label: "Agriculture" },
+  { value: "biology", label: "Biology" },
+  { value: "chemistry", label: "Chemistry" },
+  { value: "physics", label: "Physics" },
+  { value: "geology", label: "Geology" },
+  { value: "all", label: "All Departments" },
+];
+
+export const allRoles = [
+  {
+    id: "technical-assistant",
+    label: "Technical Assistant",
+    description: "Register assets, request maintenance, generate reports",
+  },
+  {
+    id: "department-head",
+    label: "Department Head",
+    description: "Approve acquisitions, manage schedules, view department assets",
+  },
+  {
+    id: "college",
+    label: "College",
+    description: "Approve department requests, request reports, share to coordinator",
+  },
+  {
+    id: "lab-coordinator",
+    label: "Lab Coordinator",
+    description: "View all analytics, generate aggregate reports",
+  },
+  {
+    id: "general-service",
+    label: "General Service",
+    description: "Handle cleaning, electric, water, furniture services",
+  },
+  {
+    id: "ict-directorate",
+    label: "ICT Directorate",
+    description: "Handle network and computer maintenance services",
+  },
+  {
+    id: "system-admin",
+    label: "System Admin",
+    description: "Full system access, user management, privilege control",
+  },
+];
+
+export const roleToId = {
+  "Technical Assistant": "technical-assistant",
+  "Department Head": "department-head",
+  "College": "college",
+  "Lab Coordinator": "lab-coordinator",
+  "General Service": "general-service",
+  "ICT Directorate": "ict-directorate",
+  "System Admin": "system-admin",
+};
+
+export const reportTypes = [
+  { value: "Inventory", label: "Lab Inventory Report" },
+  { value: "Maintenance", label: "Equipment Maintenance Summary" },
+  { value: "Utilization", label: "Lab Utilization Report" },
+  { value: "Acquisition", label: "Asset Acquisition Request" },
+  { value: "Results", label: "Student Lab Results Summary" },
+];
+
+export const allLabs = [
+  "Biology Lab A",
+  "Biology Lab B",
+  "Chemistry Lab A",
+  "Chemistry Lab B",
+  "Physics Lab",
+  "Genetics Lab",
+  "Computer Lab",
+];
+
+export const labToDepartmentMap = {
+  "Biology Lab A": "Biology",
+  "Biology Lab B": "Biology",
+  "Chemistry Lab A": "Chemistry",
+  "Chemistry Lab B": "Chemistry",
+  "Physics Lab": "Physics",
+  "Genetics Lab": "Genetics",
+  "Computer Lab": "Computer Science",
+};
+
+export const departmentCodeMap = {
+  swe: "Computer Science",
+  chemistry: "Chemistry",
+  biology: "Biology",
+  physics: "Physics",
+  genetics: "Genetics",
+};
+
+export const categories = [
+  "Microscopy",
+  "Centrifugation",
+  "PCR Equipment",
+  "Weighing",
+  "Spectroscopy",
+  "Safety Equipment",
+  "Heating",
+  "Measurement",
+  "Glassware",
+  "Chemicals",
+  "Computer Equipment",
+  "Other",
 ];
 
 // Schedule mock data
@@ -481,7 +662,136 @@ export const labColors = {
   "Genetics Lab": "bg-chart-4/10 border-l-chart-4",
   "Biology Lab A": "bg-chart-5/10 border-l-chart-5",
 };
-
+export const initialCourses = [
+  {
+    id: "1",
+    courseCode: "CHEM 101",
+    courseName: "General Chemistry",
+    labName: "Chemistry Lab A",
+    creditHours: 3,
+    labHoursPerWeek: 2,
+    studentCount: 30,
+    instructor: "Dr. Smith",
+    department: "Chemistry",
+  },
+  {
+    id: "2",
+    courseCode: "BIO 201",
+    courseName: "Cell Biology",
+    labName: "Biology Lab B",
+    creditHours: 4,
+    labHoursPerWeek: 3,
+    studentCount: 25,
+    instructor: "Dr. Johnson",
+    department: "Biology",
+  },
+  {
+    id: "3",
+    courseCode: "PHY 102",
+    courseName: "Physics II",
+    labName: "Physics Lab",
+    creditHours: 4,
+    labHoursPerWeek: 2,
+    studentCount: 28,
+    instructor: "Dr. Brown",
+    department: "Physics",
+  },
+  {
+    id: "4",
+    courseCode: "BIO 301",
+    courseName: "Genetics",
+    labName: "Genetics Lab",
+    creditHours: 3,
+    labHoursPerWeek: 2,
+    studentCount: 20,
+    instructor: "Dr. Williams",
+    department: "Genetics",
+  },
+  {
+    id: "5",
+    courseCode: "CS 201",
+    courseName: "Data Structures Lab",
+    labName: "Computer Lab",
+    creditHours: 3,
+    labHoursPerWeek: 2,
+    studentCount: 35,
+    instructor: "Prof. Wilson",
+    department: "Computer Science",
+  },
+  {
+    id: "6",
+    courseCode: "CHEM 201",
+    courseName: "Organic Chemistry",
+    labName: "Chemistry Lab B",
+    creditHours: 4,
+    labHoursPerWeek: 3,
+    studentCount: 22,
+    instructor: "Dr. Davis",
+    department: "Chemistry",
+  },
+  {
+    id: "7",
+    courseCode: "CS 101",
+    courseName: "Introduction to Programming Lab",
+    labName: "Computer Lab",
+    creditHours: 3,
+    labHoursPerWeek: 2,
+    studentCount: 40,
+    instructor: "Prof. Anderson",
+    department: "Computer Science",
+  },
+  {
+    id: "8",
+    courseCode: "CS 202",
+    courseName: "Algorithms and Data Structures Lab",
+    labName: "Computer Lab",
+    creditHours: 4,
+    labHoursPerWeek: 3,
+    studentCount: 32,
+    instructor: "Dr. Martinez",
+    department: "Computer Science",
+  },
+  {
+    id: "9",
+    courseCode: "CS 301",
+    courseName: "Database Systems Lab",
+    labName: "Computer Lab",
+    creditHours: 3,
+    labHoursPerWeek: 2,
+    studentCount: 28,
+    instructor: "Prof. Thompson",
+    department: "Computer Science",
+  },
+  {
+    id: "10",
+    courseCode: "CS 302",
+    courseName: "Web Development Lab",
+    labName: "Computer Lab",
+    creditHours: 3,
+    labHoursPerWeek: 2,
+    studentCount: 30,
+    instructor: "Dr. Lee",
+    department: "Computer Science",
+  },
+  {
+    id: "11",
+    courseCode: "CS 401",
+    courseName: "Software Engineering Lab",
+    labName: "Computer Lab",
+    creditHours: 4,
+    labHoursPerWeek: 3,
+    studentCount: 25,
+    instructor: "Prof. Garcia",
+    department: "Computer Science",
+  },
+];
+export const departmentColors = {
+  Chemistry: "bg-primary text-primary-foreground",
+  "Computer Science": "bg-success text-white",
+  Physics: "bg-accent text-accent-foreground",
+  biology: "bg-chart-5 text-white",
+  Genetics: "bg-chart-4 text-white",
+};
 // service request mock data
 export const serviceRequests = [
   {
@@ -575,6 +885,21 @@ export const statusConfig = {
   },
 };
 
-
-
-
+export const serviceTypes = [
+  { value: "Cleaning", label: "Cleaning Service", department: "General Service" },
+  { value: "Electrical", label: "Electrical Installation/Maintenance", department: "General Service" },
+  { value: "Water", label: "Water Maintenance", department: "General Service" },
+  { value: "Furniture", label: "Furniture Installation/Maintenance", department: "General Service" },
+  { value: "ICT", label: "Network/Computer Maintenance", department: "ICT Directorate" },
+];
+export const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+export const times = [
+  "08:00",
+  "09:00",
+  "10:00",
+  "11:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+];

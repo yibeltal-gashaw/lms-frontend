@@ -13,14 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, XCircle, Package, Calendar, User, Building, DollarSign } from "lucide-react";
+import { priorityStyles } from "@/data/mockdata";
 
-
-const priorityStyles = {
-  low: "bg-muted text-muted-foreground",
-  medium: "bg-blue-500/10 text-blue-600",
-  high: "bg-amber-500/10 text-amber-600",
-  critical: "bg-destructive/10 text-destructive",
-};
 
 export function AssetApprovalDialog({
   open,

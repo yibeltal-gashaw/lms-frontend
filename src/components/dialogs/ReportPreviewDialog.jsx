@@ -8,13 +8,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { FileText, Calendar, Clock, Building } from "lucide-react";
-
-const statusStyles = {
-  Approved: "bg-success/10 text-success border-success/20",
-  "Pending Review": "bg-warning/10 text-warning border-warning/20",
-  Submitted: "bg-primary/10 text-primary border-primary/20",
-  Draft: "bg-muted text-muted-foreground border-muted-foreground/20",
-};
+import { statusStyles } from "@/data/mockdata";
 
 export function ReportPreviewDialog({
   open,

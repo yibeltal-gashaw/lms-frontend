@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-
+import {allLabs, categories} from "@/data/mockdata"
 
 const assetSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -41,33 +41,6 @@ const assetSchema = z.object({
   model: z.string().max(100).optional(),
   serialNumber: z.string().max(50).optional(),
 });
-
-
-const categories = [
-  "Microscopy",
-  "Centrifugation",
-  "PCR Equipment",
-  "Weighing",
-  "Spectroscopy",
-  "Safety Equipment",
-  "Heating",
-  "Measurement",
-  "Glassware",
-  "Chemicals",
-  "Computer Equipment",
-  "Other",
-];
-
-const labs = [
-  "Biology Lab A",
-  "Biology Lab B",
-  "Chemistry Lab A",
-  "Chemistry Lab B",
-  "Physics Lab",
-  "Genetics Lab",
-  "Computer Lab",
-];
-
 
 export function RegisterAssetDialog({ open, onOpenChange }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -164,7 +137,7 @@ export function RegisterAssetDialog({ open, onOpenChange }) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {labs.map((lab) => (
+                        {allLabs.map((lab) => (
                           <SelectItem key={lab} value={lab}>
                             {lab}
                           </SelectItem>

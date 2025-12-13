@@ -37,7 +37,7 @@ export function Login() {
       toast.success("You have successfully logged in");
       navigate("/");
     } else {
-      toast(`${result.error ? result.error : "Invalid credentials"} `);
+      toast.error(`${result.error ? result.error : "Invalid credentials"} `);
     }
   };
 

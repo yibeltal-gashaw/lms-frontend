@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import {
   Form,
   FormControl,
@@ -40,6 +40,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  reportTypes,
+  allLabs,
+  labToDepartmentMap,
+  departmentCodeMap,
+} from "@/data/mockdata";
+import { normalizeDepartment } from "@//lib/utils";
 
 const reportSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(100),
@@ -51,49 +58,6 @@ const reportSchema = z.object({
   shareWithDepartmentHead: z.boolean().default(false),
 });
 
-
-const reportTypes = [
-  { value: "Inventory", label: "Lab Inventory Report" },
-  { value: "Maintenance", label: "Equipment Maintenance Summary" },
-  { value: "Utilization", label: "Lab Utilization Report" },
-  { value: "Acquisition", label: "Asset Acquisition Request" },
-  { value: "Results", label: "Student Lab Results Summary" },
-];
-
-const allLabs = [
-  "Biology Lab A",
-  "Biology Lab B",
-  "Chemistry Lab A",
-  "Chemistry Lab B",
-  "Physics Lab",
-  "Genetics Lab",
-  "Computer Lab",
-];
-
-const labToDepartmentMap = {
-  "Biology Lab A": "Biology",
-  "Biology Lab B": "Biology",
-  "Chemistry Lab A": "Chemistry",
-  "Chemistry Lab B": "Chemistry",
-  "Physics Lab": "Physics",
-  "Genetics Lab": "Genetics",
-  "Computer Lab": "Computer Science",
-};
-
-const departmentCodeMap = {
-  swe: "Computer Science",
-  chemistry: "Chemistry",
-  biology: "Biology",
-  physics: "Physics",
-  genetics: "Genetics",
-};
-
-const normalizeDepartment = (dept) => {
-  if (!dept) return null;
-  const lower = dept.toLowerCase();
-  if (departmentCodeMap[lower]) return departmentCodeMap[lower];
-  return dept;
-};
 
 export function GenerateReportDialog({ open, onOpenChange }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -122,7 +86,10 @@ export function GenerateReportDialog({ open, onOpenChange }) {
     if (!isLabAllowed(lab)) return;
     const current = form.getValues("labs");
     if (current.includes(lab)) {
-      form.setValue("labs", current.filter((l) => l !== lab));
+      form.setValue(
+        "labs",
+        current.filter((l) => l !== lab)
+      );
     } else {
       form.setValue("labs", [...current, lab]);
     }
@@ -136,21 +103,29 @@ export function GenerateReportDialog({ open, onOpenChange }) {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Report generated:", data);
-    toast.success("Report generated successfully", {
-      description: data.shareWithDepartmentHead
-        ? "Report has been shared with Department Head"
-        : "Report saved as draft",
-    });
-    setIsSubmitting(false);
-    form.reset();
-    onOpenChange(false);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      console.log("Report generated:", data);
+      toast.success(
+        `Report generated successfully and ${
+          data.shareWithDepartmentHead
+            ? "has been shared with Department Head"
+            : "saved as draft"
+        }`
+      );
+      setIsSubmitting(false);
+      form.reset();
+      onOpenChange(false);
+    } catch (error) {
+      error.map((err) => {
+        console.log(err.message);
+      });
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Generate Report</DialogTitle>
           <DialogDescription>
@@ -167,7 +142,10 @@ export function GenerateReportDialog({ open, onOpenChange }) {
                 <FormItem>
                   <FormLabel>Report Title *</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Monthly Lab Inventory Report" {...field} />
+                    <Input
+                      placeholder="e.g., Monthly Lab Inventory Report"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -216,7 +194,9 @@ export function GenerateReportDialog({ open, onOpenChange }) {
                               !field.value && "text-muted-foreground"
                             )}
                           >
-                            {field.value ? format(field.value, "PPP") : "Pick a date"}
+                            {field.value
+                              ? format(field.value, "PPP")
+                              : "Pick a date"}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -251,7 +231,9 @@ export function GenerateReportDialog({ open, onOpenChange }) {
                               !field.value && "text-muted-foreground"
                             )}
                           >
-                            {field.value ? format(field.value, "PPP") : "Pick a date"}
+                            {field.value
+                              ? format(field.value, "PPP")
+                              : "Pick a date"}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -309,7 +291,8 @@ export function GenerateReportDialog({ open, onOpenChange }) {
                             htmlFor={lab}
                             className={cn(
                               "text-sm font-medium leading-none",
-                              !isAllowed && "cursor-not-allowed opacity-70 text-muted-foreground"
+                              !isAllowed &&
+                                "cursor-not-allowed opacity-70 text-muted-foreground"
                             )}
                           >
                             {lab}
@@ -330,11 +313,10 @@ export function GenerateReportDialog({ open, onOpenChange }) {
                 <FormItem>
                   <FormLabel>Additional Notes</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <RichTextEditor
+                      value={field.value || ""}
+                      onChange={field.onChange}
                       placeholder="Any additional comments or context for the report..."
-                      className="resize-none"
-                      rows={3}
-                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -364,7 +346,11 @@ export function GenerateReportDialog({ open, onOpenChange }) {
             />
 
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>

@@ -41,20 +41,19 @@ export function ManageRolesDialog({ open, onOpenChange, user }) {
     }
 
     setIsLoading(true);
-    
+
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    
+
     const roleLabels = selectedRoles
       .map((id) => allRoles.find((r) => r.id === id)?.label)
       .filter(Boolean)
       .join(", ");
 
-    toast({
-      title: "Roles Updated",
+    toast.success("Roles Updated", {
       description: `${user?.name}'s roles have been updated to: ${roleLabels}`,
     });
-    
+
     setIsLoading(false);
     onOpenChange(false);
   };
@@ -63,7 +62,7 @@ export function ManageRolesDialog({ open, onOpenChange, user }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent className="sm:max-w-[550px] overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />

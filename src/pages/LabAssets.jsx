@@ -7,6 +7,7 @@ import {
   Eye,
   Edit,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { RegisterAssetDialog } from "@/components/dialogs/RegisterAssetDialog";
 import { Button } from "@/components/ui/button";
@@ -36,9 +37,10 @@ import {
 import { cn } from "@/lib/utils";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
 import { useAuth } from "@/contexts/AuthContext";
-import {assets, statusStyles} from "@/data/mockdata"
+import { assets, statusStyles } from "@/data/mockdata";
 import { labToDepartmentMap } from "@/data/mockdata";
 import { normalizeDepartment } from "@/lib/utils";
+import { ImportAssetsDialog } from "@/components/dialogs/ImportAssetsDialog";
 
 // Helper function to get department from lab name
 const getDepartmentFromLab = (labName) => {
@@ -49,6 +51,7 @@ export function LabAssets() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
+  const [isImportDialogOpen,setIsImportDialogOpen] = useState(false);
   const { hasPermission } = useRoleAccess();
   const { user } = useAuth();
   // Get user's department
@@ -71,11 +74,11 @@ export function LabAssets() {
       asset.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       asset.lab.toLowerCase().includes(searchQuery.toLowerCase()) ||
       asset.category.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     // Filter by status
     const matchesStatus =
       statusFilter === "all" || asset.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -90,13 +93,23 @@ export function LabAssets() {
           </p>
         </div>
         {hasPermission("canRegisterAssets") && (
-          <Button
-            className="gap-2"
-            onClick={() => setIsRegisterDialogOpen(true)}
-          >
-            <Plus className="h-4 w-4" />
-            Register Asset
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => setIsImportDialogOpen(true)}
+            >
+              <Upload className="h-4 w-4" />
+              Import CSV
+            </Button>
+            <Button
+              className="gap-2"
+              onClick={() => setIsRegisterDialogOpen(true)}
+            >
+              <Plus className="h-4 w-4" />
+              Register Asset
+            </Button>
+          </div>
         )}
       </div>
 
@@ -208,6 +221,11 @@ export function LabAssets() {
       <RegisterAssetDialog
         open={isRegisterDialogOpen}
         onOpenChange={setIsRegisterDialogOpen}
+      />
+      {/* Import Assets Dialog */}
+      <ImportAssetsDialog
+        open={isImportDialogOpen}
+        onOpenChange={setIsImportDialogOpen}
       />
     </div>
   );
